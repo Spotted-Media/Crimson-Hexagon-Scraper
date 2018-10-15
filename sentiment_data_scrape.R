@@ -1,6 +1,5 @@
 #Crimson Hexagon sentiemnt specific scrapper functions
 
-
 #Function that scrapes positive sentiment.
 #input: integer value of html id for positive sentiment table 
 pull_basic_positive_sentiment <- function(htmlId){
