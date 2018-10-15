@@ -85,7 +85,7 @@ for (i in 1:length(namelist)){
 
 
 #Main loop for running scraper functions
-for (i in 75:nrow(celeb_list)){
+for (i in 1:nrow(celeb_list)){
   #update the monitor to load data for desired celebrities
   update_monitor(celeb_list$fullname[i], celeb_list$twitterhandle[i], update_url)
   #sleep for a random number of secconds between 15-20 secconds
