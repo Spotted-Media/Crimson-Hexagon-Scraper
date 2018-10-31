@@ -21,9 +21,7 @@ Please make sure you have the listed dependencies installed on your machine
 1. RSelenium
 1. [Docker for Windows](https://docs.docker.com/docker-for-windows/install/) OR [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
 1. [Chrome Driver](http://chromedriver.chromium.org/downloads)
-
-## Create Local Credential csv Containing Login Credentials for Crimson Hexagon
-An example of this file is under credential.csv
+1. Create Local Credential csv Containing Login Credentials for Crimson Hexagon: An example of this file is under credential.csv
 
 FLUF
 
