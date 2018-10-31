@@ -93,5 +93,3 @@ scrape_sentiment_data <- function(celebrityid, fullname, sentiment_url){
   
   return(formatted_data_set)
 }
-
-
