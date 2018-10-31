@@ -58,7 +58,6 @@ update_monitor <- function(celeb_name, celeb_twitter_handle, update_url){
     updated_string <- paste(paste0('"',celeb_name,'"'),celeb_twitter_handle, as.character(gsub(' ', '', celeb_name)))
     
   }
-
   #change celebrity name and twitter handle
   webElem <- remDr$findElement(using = 'css selector',"#keyword-selector-oredTerms")
   webElem$clearElement()
@@ -108,12 +107,12 @@ check_update_status <- function(){
   Sys.sleep(sample(40:50,1))
   exit_while_loop <- remDr$findElement(using = 'css selector',"#monitorSummary > div.status-message.status-information > div.status-message-text > div.info > span")$getStatus()$message
   #While loop breaks only when the html for the generation status banner is inactive or elapsed time is greater than 10 minutes, whichever comes first
-  while (exit_while_loop == 'Server is running' & cur_time - start_time < 13){
-  suppressMessages({
-    exit_while_loop <- tryCatch({remDr$findElement(using = 'css selector',"#monitorSummary > div.status-message.status-information > div.status-message-text > div.info > span")$getStatus()$message},error=function(e){return('Server is not running')})
-   })
+  while (exit_while_loop == 'Server is running'){
+    suppressMessages({
+      exit_while_loop <- tryCatch({remDr$findElement(using = 'css selector',"#monitorSummary > div.status-message.status-information > div.status-message-text > div.info > span")$getStatus()$message},error=function(e){return('Server is not running')})
+    })
     refresh_page()
-    Sys.sleep(sample(13:15,1))
+    Sys.sleep(sample(10:15,1))
     cur_time <- Sys.time()
   }
   Sys.sleep(sample(40:50,1))
@@ -143,30 +142,33 @@ format_sentiment_html <- function(html){
 }
 
 #function that pulls desired monitor's url for automation 
-get_monitor_url <- function(monitor_name){
-  #navigate to "https://forsight.crimsonhexagon.com/ch/monitors"
+get_monitor_url <- function(monitor_names){
+  #navigate to monitors page
   remDr$navigate("https://forsight.crimsonhexagon.com/ch/monitors")
   
   #pull list of monitor names that currently exist on Crimson Hexagon account
   webElem <- remDr$findElement(using = 'css selector',"#DXContent > div.right.dx-right-column > div.dx")
   monitor_list <- webElem$getElementAttribute("outerHTML")[[1]] 
   monitor_list <- strsplit(monitor_list, 'monitorName')
+  monitor_urls <- as.character()
   #iterate through each monitor name to find desired automation monitor
-  for (i in 2:length(monitor_list[[1]])){
-    string_to_format <-  strsplit(monitor_list[[1]][i],'data-ch-name=')
-    string_to_format <- string_to_format[[1]][1]
-    string_to_format <-  strsplit(string_to_format,'</a>')
-    
-    formatted_name <-  strsplit(string_to_format[[1]][1],'>')
-    formatted_name <- formatted_name[[1]][2]
-    monitor_id <- strsplit(string_to_format[[1]][3],'data-id=\"')
-    monitor_id <- gsub("\\D", "", monitor_id[[1]][2])
-    #if the pulled monitor name equals the desired monitor name, then construct the monitor url using respective monitor_id
-    if (formatted_name == monitor_name){
-        monitor_url <- paste0('https://forsight.crimsonhexagon.com/ch/opinion/results?id=', monitor_id)
+  for (i in 1:length(monitor_names)){
+    for (j in 2:length(monitor_list[[1]])){
+      string_to_format <-  strsplit(monitor_list[[1]][j],'data-ch-name=')
+      string_to_format <- string_to_format[[1]][1]
+      string_to_format <-  strsplit(string_to_format,'</a>')
+      
+      formatted_name <-  strsplit(string_to_format[[1]][1],'>')
+      formatted_name <- formatted_name[[1]][2]
+      monitor_id <- strsplit(string_to_format[[1]][3],'data-id=\"')
+      monitor_id <- gsub("\\D", "", monitor_id[[1]][2])
+      #if the pulled monitor name equals the desired monitor name, then construct the monitor url using respective monitor_id
+      if (formatted_name == monitor_names[i]){
+        monitor_urls <- c(monitor_urls, paste0('https://forsight.crimsonhexagon.com/ch/opinion/results?id=', monitor_id))
+      }
     }
   }
-  return(monitor_url)
+  return(monitor_urls)
 }
 
 
@@ -192,8 +194,9 @@ get_sentiment_url_filtered <- function(){
   webElem <- remDr$findElement(using = 'css selector',"#navLinkanalysis > div > span")
   webElem$clickElement()
   Sys.sleep(sample(2:4,1))
+  
   #click on granulation filter for sentiment-by-day data
-  webElem <- remDr$findElement(using = 'css selector',"#moduleOpinionAnalysis > div.module-content > div.chart-menus > div:nth-child(2) > ul > li:nth-child(2) > a")
+  webElem <- remDr$findElement(using = 'css selector',"#moduleOpinionAnalysis > div.module-content > div.chart-menus > div:nth-child(2) > ul > li:nth-child(2)")
   webElem$clickElement()
   
   #click on calander dropdown menue 
@@ -206,4 +209,21 @@ get_sentiment_url_filtered <- function(){
   #pull current url
   filtered_sentiment_url <- remDr$getCurrentUrl()
   return(filtered_sentiment_url)
+}
+
+get_monitor_status <- function(url){
+  remDr$navigate(url)
+  webElem <- remDr$findElement(using = 'css selector',"#monitorSetup > div:nth-child(1) > div > div.monitor-status")
+  status <- as.character(unlist(webElem$getElementText()))
+  return(status)
+}
+
+reset_scraper <- function(monitor_number){
+  remDr$navigate(monitor_urls[monitor_number])
+  
+  #get monitor reset url
+  update_url <<-  unlist(get_update_url())
+  remDr$navigate(monitor_urls[monitor_number])
+  #get sentiment url with daily granularity and "-(RT)" filter applied
+  sentiment_url <<- unlist(get_sentiment_url_filtered())
 }
