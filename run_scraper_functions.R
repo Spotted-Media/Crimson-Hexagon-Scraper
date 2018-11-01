@@ -81,7 +81,7 @@ if(remDr$getCurrentUrl() == 'https://forsight.crimsonhexagon.com/ch/home') {
 }
 
 #intialize starting and ending indices for scraper
-start <-33
+start <-1
 end <- nrow(celeb_list)
 
 #get main monitor url
@@ -145,6 +145,7 @@ for (i in start:end){
     #sleep for a random ammount of time between 70 and 100 secconds after each loop 
     Sys.sleep(sample(70:100, 1))
   }, error=function(e){
+    Sys.sleep(sample(120:180, 1))
     remDr$close()#close last browsing session
     remDr$open() #initialize chrome browser
     #login to Chrimson Hexagon
@@ -169,3 +170,4 @@ for (i in start:end){
     }
   })
 }
+
