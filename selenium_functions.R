@@ -103,11 +103,11 @@ update_monitor <- function(celeb_name, celeb_twitter_handle, update_url){
 #can only use right after updating monitor
 check_update_status <- function(){
   start_time <- Sys.time()
+  Sys.sleep(sample(120:180,1))
   cur_time <- Sys.time()
-  Sys.sleep(sample(40:50,1))
   exit_while_loop <- remDr$findElement(using = 'css selector',"#monitorSummary > div.status-message.status-information > div.status-message-text > div.info > span")$getStatus()$message
   #While loop breaks only when the html for the generation status banner is inactive or elapsed time is greater than 10 minutes, whichever comes first
-  while (exit_while_loop == 'Server is running'){
+  while (exit_while_loop == 'Server is running' & (cur_time - start_time) < 15){
     suppressMessages({
       exit_while_loop <- tryCatch({remDr$findElement(using = 'css selector',"#monitorSummary > div.status-message.status-information > div.status-message-text > div.info > span")$getStatus()$message},error=function(e){return('Server is not running')})
     })
