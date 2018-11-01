@@ -23,7 +23,7 @@ Please make sure you have the listed dependencies installed on your machine
 1. [Chrome Driver](http://chromedriver.chromium.org/downloads)
 1. Create local credential csv containing login credentials for crimson hexagon: An example of this file is under crimson_credentials.csv
 
-#Connecting to Remote Chrome Server
+## Connecting to Remote Chrome Server
 * **Step 1:** open your machine's Command Prompt and navigate to RSelenium package/bin directory. Example: cd C:/Users/pete/OneDrive/Documents/R/win-library/3.5/RSelenium/bin  (NOTE: its important that you provide your machine's RSelenium bin file path.)
 * **Step 2:** By default the Selenium Server listens for connections on port 4444 which is most likely being used for your default browser. So, you must specify which port to start your selenium session on. In the compand prompt again, run: 
 java -DwebDriver.chrome.driver="C:Users\Pete\Downloads\chromedriver.exe" -jar selenium-server-standalone-3.14.0.jar -port 4445
